@@ -1,0 +1,40 @@
+<html>
+    <head>
+       <title>Ideas</title>
+    </head>
+    <body>
+        <div id='wrapper'>
+            <div class='box'>
+                <h5>Hi <%= @user.name %>!</h5>
+                <br>
+                <form action='/bright_ideas' method='post'>
+                    <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+                    <textarea rows="2" cols="50" value='Post something witty here...' name='idea[content]'>Post something witty here...</textarea>
+                    <input type='submit' value='Idea'>
+                </form>
+                <br>
+                <% @ideas.sort {|a,b| b.likes.count <=> a.likes.count}.each do |i| %>
+                <ul style="list-style: none;">
+                    <li><a href="/users/<%= i.user_id %>"><%= i.user.name %></a> says:</li>
+                    <li> <%= i.content %> </li>
+                    <li><a href="/bright_ideas/<%= i.id %>"><%= i.likes.count %> people</a> like this.</li>
+                    <li><form action='/likes' method='post'>
+                        <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                        <input type='hidden' name='idea_id' value='<%= i.id %>'>
+                        <input type='submit' value='Like'>
+                    </form>
+                    </li>
+                    <li><% if current_user == i.user %>
+                            <form action='/bright_ideas/<%= i.id %>' method='post'>
+                            <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                            <input type='hidden' name='_method' value='delete'>
+                            <input type='submit' value='Delete'>
+                            </form>
+                        <% end %>
+                    </li>
+                </ul>
+                <% end %>
+            </div>
+        </div>
+    </body>
+</html>
